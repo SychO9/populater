@@ -1,0 +1,23 @@
+{
+	"name": "sycho/database_populater",
+	"authors": [
+		{
+			"name": "Sami 'SychO' Mazouz",
+			"email": "sychocouldy@gmail.com",
+			"homepage": "https://sycho9.github.io"
+		}
+	],
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"SychO\\DatabasePopulater\\": "src/"
+		}
+	},
+	"require": {
+		"php": "^7.0",
+		"fzaninotto/faker": "1.9.*",
+		"symfony/yaml": "^5.0",
+		"symfony/dotenv": "^5.0",
+		"codedungeon/php-cli-colors": "^1.10"
+	}
+}

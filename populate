@@ -1,0 +1,89 @@
+<?php
+
+require 'vendor/autoload.php';
+
+use Symfony\Component\Dotenv\Dotenv;
+use SychO\DatabasePopulater\Formatter;
+use  Codedungeon\PHPCliColors\Color;
+
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+$start = microtime(true);
+
+$long_options = [
+    'rows:',
+    'table:'
+];
+$options = getopt("", $long_options);
+
+$cli_color = new Color();
+
+if ($options == false) {
+    echo "Missing options, make sure the following options are filled:
+    {$cli_color->green()}table{$cli_color->normal()}: {$cli_color->red()}<table_name>
+    {$cli_color->green()}rows{$cli_color->normal()}: {$cli_color->red()}<number_of_rows_to_fill>
+    {$cli_color->white()}example{$cli_color->normal()}: {$cli_color->yellow()}php populate.php --table fake_users --rows 4000\n";
+    exit();
+} elseif ($options['rows'] > $_ENV['LIMIT']) {
+    echo "{$cli_color->light_red()}The amount of rows is too large (╯°□°）╯︵ ┻━┻, please take it down.. ಠ_ಠ \n";
+    exit();
+}
+
+set_time_limit(0);
+
+$faker = Faker\Factory::create();
+$formatter = new Formatter($options['table']);
+
+$db = new PDO(
+    "mysql:host={$_ENV['DB_HOST']};dbname={$_ENV['DB_NAME']}",
+    $_ENV['DB_USER'],
+    $_ENV['DB_PASS'],
+    array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+);
+
+$columns = [];
+
+foreach ($formatter->getColumns() as $column) {
+    $columns[$column] = ":$column";
+}
+$list_columns = implode(',', array_keys($columns));
+$list_bindings = implode(',', $columns);
+
+$insert_statement = $db->prepare(
+    "INSERT INTO {$options['table']}
+        ($list_columns)
+    VALUES
+        ($list_bindings)"
+);
+
+$filler_char = "\u{25AE}";
+
+echo "To stop the process hit CTRL+C\n";
+
+for ($i=1; $i<=$options['rows']; $i++)
+{
+    $iteration_start = microtime(true);
+
+    foreach ($formatter->format() as $column => $value)
+        $insert_statement->bindValue($columns[$column], $value);
+
+    $insert_statement->execute();
+
+    // Visual progress
+    $percentage = round((($i)*100) / $options['rows']);
+    $rec_count = (int)($percentage*20/100);
+    $rectangles = str_repeat($filler_char, $rec_count+1);
+    $space = str_repeat(' ', (20-$rec_count)+1);
+
+    // Remaining time
+    $rate = ($iteration_start - $start)/$i;
+    $remaining_seconds = round(($rate * ($options['rows']-$i)), 0);
+    $remaining_time = (new DateTime("@0"))->diff(new DateTime("@$remaining_seconds"))->format('%h hours, %i minutes and %s seconds');
+
+    echo "{$cli_color->light_green()}[{$rectangles}{$space}]  {$cli_color->bold_red()}...$percentage%    /    Remaining: $remaining_time{$cli_color->light_green()}\r";
+}
+
+$time = round(microtime(true) - $start, 5);
+
+exit("\n...\n...\n...\n{$cli_color->light_red()}Populated `{$cli_color->magenta()}{$options['table']}{$cli_color->light_red()}` with fake data in {$time}seconds\n");

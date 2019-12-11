@@ -1,0 +1,8 @@
+format:
+    id: autoIncrement
+    created_at: "dateTime:'2019-02-25 08:37:17':UTC"
+    title: "sentence:6"
+    body: "paragraphs:3:true"
+    label: word
+    color: hexcolor
+    id_author: "numberBetween:1:10000"
