@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+/**
+ * @package sycho/populater
+ * @author Sami 'SychO' Mazouz
+ * @version 1.0.0
+ * @license MIT
+ */
+
+set_time_limit(0);
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use SychO\Populater\Command;
+
+$dotenv = Dotenv\Dotenv::create(__DIR__);
+$dotenv->load();
+
+$app = new Application();
+
+$app->add(new Command\PopulateCommand('populate'));
+$app->add(new Command\AddConnectionCommand('add:connection'));
+// $app->add(new Command\UseConnectionCommand('use:connection'));
+
+$app->run();

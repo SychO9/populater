@@ -1,8 +1,0 @@
-format:
-    id: autoIncrement
-    first_name: firstName
-    last_name: lastName
-    phone_number: phoneNumber
-    birth_date: "dateTime:'2005-02-25 08:37:17':UTC"
-    email: freeEmail
-    passwrd: password

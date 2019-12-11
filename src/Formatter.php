@@ -1,6 +1,6 @@
 <?php
 
-namespace SychO\DatabasePopulater;
+namespace SychO\Populater;
 
 use Symfony\Component\Yaml\Yaml;
 use Faker\Factory;
@@ -20,10 +20,20 @@ class Formatter
     /**
      * @param string $blueprint
      */
-    public function __construct(string $blueprint)
+    public function __construct()
     {
-        $this->blueprint = Yaml::parseFile(__DIR__ . '/../blueprints/' . $blueprint . '.yml');
         $this->faker = Factory::create();
+    }
+
+    /**
+     * @param string $blueprint
+     * @return \SychO\Populater\Formatter
+     */
+    public function setBlueprint(string $blueprint)
+    {
+        $this->blueprint = Yaml::parseFile(__DIR__ . '/../blueprints/' . env('DB_NAME') . '/' . $blueprint . '.yml');
+
+        return $this;
     }
 
     /**
@@ -88,5 +98,17 @@ class Formatter
     public function autoIncrement()
     {
         return 0;
+    }
+
+    /**
+     * @param string $blueprint
+     * @return \SychO\Populater\Formatter
+     */
+    public static function fromBlueprint(string $blueprint): self
+    {
+        $instance = new Formatter();
+        $instance->setBlueprint($blueprint);
+
+        return $instance;
     }
 }

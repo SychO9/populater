@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 
 use Symfony\Component\Dotenv\Dotenv;
 use SychO\DatabasePopulater\Formatter;
-use  Codedungeon\PHPCliColors\Color;
+use Codedungeon\PHPCliColors\Color;
 
 $dotenv = new Dotenv();
 $dotenv->load(__DIR__.'/.env');
@@ -32,7 +32,6 @@ if ($options == false) {
 
 set_time_limit(0);
 
-$faker = Faker\Factory::create();
 $formatter = new Formatter($options['table']);
 
 $db = new PDO(
