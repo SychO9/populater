@@ -1,5 +1,6 @@
 {
-	"name": "sycho/database_populater",
+	"name": "sycho/populater",
+	"description": "Console Commands to populate your database tables with fake data",
 	"authors": [
 		{
 			"name": "Sami 'SychO' Mazouz",
@@ -18,6 +19,7 @@
 		"fzaninotto/faker": "1.9.*",
 		"symfony/yaml": "^5.0",
 		"symfony/dotenv": "^5.0",
-		"codedungeon/php-cli-colors": "^1.10"
+		"codedungeon/php-cli-colors": "^1.10",
+		"symfony/console": "^5.0"
 	}
 }
