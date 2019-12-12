@@ -1,9 +1,16 @@
 <?php
+/**
+ * @package sycho/populater
+ * @author Sami 'SychO' Mazouz
+ * @version 1.0.0
+ * @license MIT
+ */
 
-namespace SychO\Populater;
+namespace SychO\Populater\Formatter;
 
-use Symfony\Component\Yaml\Yaml;
-use Faker\Factory;
+use SychO\Populater\StorageManager;
+use SychO\Populater\Formatter\Generator;
+use SychO\Populater\Exception\GeneratorException;
 
 class Formatter
 {
@@ -13,16 +20,16 @@ class Formatter
     public $blueprint;
 
     /**
-     * @var \Faker\Factory
+     * \SychO\Populater\Formatter\Generator
      */
-    public $faker;
+    public $generator;
 
     /**
-     * @param string $blueprint
+     * ...
      */
     public function __construct()
     {
-        $this->faker = Factory::create();
+        $this->generator = new Generator();
     }
 
     /**
@@ -31,7 +38,18 @@ class Formatter
      */
     public function setBlueprint(string $blueprint)
     {
-        $this->blueprint = Yaml::parseFile(__DIR__ . '/../blueprints/' . env('DB_NAME') . '/' . $blueprint . '.yml');
+        $blueprint = $blueprint.'.yml';
+
+        if (StorageManager::getFileSystem()->exists(StorageManager::blueprints(env('CONNECTION').'/'.$blueprint)))
+            $blueprint = env('CONNECTION').'/'.$blueprint;
+        elseif (!StorageManager::getFileSystem()->exists(StorageManager::blueprints($blueprint)))
+            throw new FileReadException("Blueprint $blueprint not found.");
+
+        try {
+            $this->blueprint = StorageManager::read('blueprints/'.$blueprint);
+        } catch (FileReadException $e) {
+            throw $e;
+        }
 
         return $this;
     }
@@ -46,10 +64,11 @@ class Formatter
         foreach ($this->blueprint['format'] as $column => $format) {
             $method = $this->getMethod($format);
 
-            if (method_exists($this, $method['name']))
-                $data[$column] = $this->{$method['name']}(...$method['params']);
-            else
-                $data[$column] = $this->faker->{$method['name']}(...$method['params']);
+            $data[$column] = $this->generator->{$method['name']}(...$method['params']);
+            $type = gettype($data[$column]);
+
+            if (in_array($type, ['array', 'object']))
+                throw new GeneratorException("Error: The generator '$format' retuns a type of '$type'.");
         }
 
         return $data;
@@ -82,22 +101,6 @@ class Formatter
             'name' => $faker_method,
             'params' => $params
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function dateTime(...$params): string
-    {
-        return $this->faker->dateTime(...$params)->format('Y-m-d\TH:i:s.u');
-    }
-
-    /**
-     *
-     */
-    public function autoIncrement()
-    {
-        return 0;
     }
 
     /**

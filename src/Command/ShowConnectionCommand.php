@@ -13,7 +13,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Codedungeon\PHPCliColors\Color;
 
 class ShowConnectionCommand extends Command
 {
@@ -32,12 +31,12 @@ class ShowConnectionCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln(Color::RED . 'Connection: ' . Color::LIGHT_GREEN . env('CONNECTION'));
+        $output->writeln('<fg=red>Connection:</> <fg=green>'.env('CONNECTION').'</>');
 
         if ($input->getOption('full')) {
             foreach (Database::ENV as $var => $info) {
                 if ($info['name'] !== 'connection_name')
-                    $output->writeln(Color::CYAN . "\t{$info['name']}: " . Color::LIGHT_GREEN . env($var, $info['default']));
+                    $output->writeln("<fg=blue>\t{$info['name']}:</> <fg=green>".env($var, $info['default'])."</>");
             }
         }
 

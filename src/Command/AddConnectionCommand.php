@@ -9,37 +9,15 @@
 namespace SychO\Populater\Command;
 
 use SychO\Populater\Database\Database;
+use SychO\Populater\Exception\FileReadException;
+use SychO\Populater\StorageManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Codedungeon\PHPCliColors\Color;
 
 class AddConnectionCommand extends Command
 {
-    /**
-     * @var \Symfony\Component\Filesystem\Filesystem
-     */
-    protected $filesystem;
-
-    /**
-     * @var string
-     */
-    const INPUT_FILE = __DIR__ . '/../../storage/connections.yml';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($name)
-    {
-        parent::__construct($name);
-
-        $this->filesystem = new Filesystem();
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -63,9 +41,10 @@ class AddConnectionCommand extends Command
         $connections = [];
 
         try {
-            $connections = Yaml::parseFile(self::INPUT_FILE);
-        } catch (ParseException $e) {
-            $output->writeln('Cannot read connections.yml');
+            $connections = StorageManager::read('connections.yml');
+        } catch (FileReadException $e) {
+            $output->writeln("<fg=yellow>{$e->getMessage()}</>");
+            return 0;
         }
 
         foreach (Database::ENV as $var => $info) {
@@ -75,7 +54,8 @@ class AddConnectionCommand extends Command
                 $connections[$conn][$var] = $input->getArgument($info['name']) ?? $info['default'];
         }
 
-        $this->filesystem->dumpFile(self::INPUT_FILE, Yaml::dump($connections));
+        StorageManager::writeArrayTo('connections.yml', $connections);
+        $output->writeln('<fg=green>Connection added.</>');
 
         return 0;
     }

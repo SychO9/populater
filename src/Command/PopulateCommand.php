@@ -8,14 +8,14 @@
 
 namespace SychO\Populater\Command;
 
-use SychO\Populater\Formatter;
+use SychO\Populater\Formatter\Formatter;
 use SychO\Populater\Database\Database;
+use SychO\Populater\Exception\FileReadException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use ProgressBar\Manager as ProgressBar;
-use Codedungeon\PHPCliColors\Color;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class PopulateCommand extends Command
 {
@@ -59,17 +59,44 @@ class PopulateCommand extends Command
         $table = $input->getArgument('blueprint');
         $rows = (int) $input->getArgument('rows');
 
-        $this->formatter->setBlueprint($table);
-        $progress = new ProgressBar(0, $rows, 80, "\u{25AE}", ' ', ' ');
-        $progress->setFormat(Color::RED . '[%bar%]' . Color::LIGHT_GREEN . ' %percent%% %eta%');
+        try {
+            $this->formatter->setBlueprint($table);
+        } catch (FileReadException $e) {
+            $output->writeln("<fg=yellow>{$e->getMessage()}</>");
+            return 0;
+        }
+
+        // Check if the table exists
+        if (!Database::schema('default')->hasTable($table))
+        {
+            $output->writeln("<fg=yellow>Table `<fg=red>$table</>` does not exist, make sure you create the table before populating it.</>");
+            return 0;
+        }
+
+        $progress = new ProgressBar($output, $rows);
+        $progress->setBarCharacter("\u{25AE}");
+        $progress->setEmptyBarCharacter('.');
+        $progress->setProgressCharacter('');
+        $progress->setFormat('<fg=red>[%bar% ]</> <fg=green>%percent:3s%% %estimated:-6s% %memory:6s%</>');
+        $progress->setBarWidth(50);
+        $progress->maxSecondsBetweenRedraws(0.2);
+        $progress->minSecondsBetweenRedraws(0.1);
+        $progress->start();
 
         for ($i=1; $i<=$rows; $i++) {
-            Database::table($table)->insert($this->formatter->format());
+            try {
+                Database::table($table)->insert($this->formatter->format());
+            } catch (\Exception $e) {
+                $output->writeln("<fg=yellow>{$e->getMessage()}</>");
+                return 0;
+            }
+
             $progress->advance();
         }
 
-        $output->writeln("...\n...\n...");
-        $output->writeln(Color::RED . 'Finished in ' . Color::LIGHT_GREEN . round(microtime(true) - $start, 3) . Color::RED . 'ms');
+        $progress->finish();
+        $output->writeln("\n...\n...\n...");
+        $output->writeln('<fg=red>Finished in <fg=green>'.round(microtime(true) - $start, 3).'</>ms</>');
 
         return 0;
     }
