@@ -8,10 +8,11 @@
 
 namespace SychO\Populater;
 
+use SychO\Populater\Exception\FileReadException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
-use SychO\Populater\Exception\FileReadException;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Finder\Finder;
 
 class StorageManager
 {
@@ -70,6 +71,21 @@ class StorageManager
         }
 
         return $data;
+    }
+
+    /**
+     * Lists all files of a directory in "storage/"
+     */
+    public static function getBlueprints(): array
+    {
+        $blueprints = [];
+        $finder = new Finder();
+        $finder->files()->in(self::blueprints());
+
+        foreach ($finder as $file)
+            $blueprints[$file->getFilename()] = $file;
+
+        return $blueprints;
     }
 
     /**

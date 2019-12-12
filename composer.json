@@ -24,6 +24,7 @@
 		"guiguiboy/php-cli-progress-bar": "^0.0.4",
 		"phpoption/phpoption": "^1.6",
 		"vlucas/phpdotenv": "^3.3",
-		"symfony/filesystem": "^5.0"
+		"symfony/filesystem": "^5.0",
+		"symfony/finder": "^5.0"
 	}
 }
