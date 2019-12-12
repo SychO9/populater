@@ -21,6 +21,8 @@ $app = new Application();
 
 $app->add(new Command\PopulateCommand('populate'));
 $app->add(new Command\AddConnectionCommand('add:connection'));
-// $app->add(new Command\UseConnectionCommand('use:connection'));
+$app->add(new Command\UseConnectionCommand('use:connection'));
+$app->add(new Command\ShowConnectionCommand('show:connection'));
+$app->add(new Command\ListConnectionsCommand('list:connections'));
 
 $app->run();

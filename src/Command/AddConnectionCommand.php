@@ -28,7 +28,7 @@ class AddConnectionCommand extends Command
     /**
      * @var string
      */
-    protected $inputFile = __DIR__ . '/../../storage/connections.yml';
+    const INPUT_FILE = __DIR__ . '/../../storage/connections.yml';
 
     /**
      * {@inheritdoc}
@@ -63,7 +63,7 @@ class AddConnectionCommand extends Command
         $connections = [];
 
         try {
-            $connections = Yaml::parseFile($this->inputFile);
+            $connections = Yaml::parseFile(self::INPUT_FILE);
         } catch (ParseException $e) {
             $output->writeln('Cannot read connections.yml');
         }
@@ -75,7 +75,7 @@ class AddConnectionCommand extends Command
                 $connections[$conn][$var] = $input->getArgument($info['name']) ?? $info['default'];
         }
 
-        $this->filesystem->dumpFile($this->inputFile, Yaml::dump($connections));
+        $this->filesystem->dumpFile(self::INPUT_FILE, Yaml::dump($connections));
 
         return 0;
     }
