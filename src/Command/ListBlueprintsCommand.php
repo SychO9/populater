@@ -22,7 +22,7 @@ class ListBlueprintsCommand extends Command
      */
     protected function configure()
     {
-
+        $this->setDescription('Lists existing blueprints');
     }
 
     /**
