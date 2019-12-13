@@ -17,10 +17,14 @@ class AddConnectionCommandTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        StorageManager::rename(
-            StorageManager::path('connections.yml'),
-            StorageManager::path('connections.tmp.yml')
-        );
+        try {
+            StorageManager::rename(
+                StorageManager::path('connections.yml'),
+                StorageManager::path('connections.tmp.yml')
+            );
+        } catch (\Exception $e) {
+            // ...
+        }
     }
 
     public function testExecute()
@@ -44,9 +48,15 @@ class AddConnectionCommandTest extends TestCase
     public static function tearDownAfterClass(): void
     {
         StorageManager::remove(StorageManager::path('connections.yml'));
-        StorageManager::rename(
-            StorageManager::path('connections.tmp.yml'),
-            StorageManager::path('connections.yml')
-        );
+
+        try {
+            StorageManager::rename(
+                StorageManager::path('connections.tmp.yml'),
+                StorageManager::path('connections.yml')
+            );
+        } catch (\Exception $e) {
+            StorageManager::remove(StorageManager::path('connections.yml'));
+        }
+
     }
 }
