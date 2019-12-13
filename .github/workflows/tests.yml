@@ -5,15 +5,14 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       max-parallel: 3
       matrix:
-        os: ubuntu-latest
         php: [7.2, 7.3, 7.4]
 
-    name: PHP ${{ matrix.php }} on ${{ matrix.os }}
+    name: PHP ${{ matrix.php }}
 
     steps:
     - uses: actions/checkout@v1
