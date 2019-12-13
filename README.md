@@ -107,7 +107,7 @@ $ php populate <blueprint> <rows>
 
 ##### Example
 ```
-$ php populate fake_users 2000
+$ php populate fake_users 200
 [▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰ ] 100% 11 secs 8.0 MiB
 ...
 ...
