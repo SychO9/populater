@@ -11,7 +11,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "SychO\\Populater\\": "src/"
+            "SychO\\Populater\\": "src/",
+            "SychO\\Populater\\Test\\": "tests/"
         }
     },
     "require": {
