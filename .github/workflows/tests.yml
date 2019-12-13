@@ -21,7 +21,7 @@ jobs:
       uses: shivammathur/setup-php@master
       with:
         php-version: ${{ matrix.php }}
-        extensions: ext-mbstring
+        extensions: mbstring
 
     - name: Check PHP Version
       run: php -v
