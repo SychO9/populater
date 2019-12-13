@@ -32,5 +32,9 @@
     },
     "scripts": {
         "phpunit": "phpunit tests"
+    },
+    "support": {
+        "issues": "https://github.com/SychO9/populater/issues",
+        "source": "https://github.com/SychO9/populater"
     }
 }
