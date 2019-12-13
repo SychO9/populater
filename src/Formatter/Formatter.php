@@ -39,17 +39,14 @@ class Formatter
     public function setBlueprint(string $blueprint)
     {
         $blueprint = $blueprint.'.yml';
+        $folder = env('DB_NAME');
 
-        if (StorageManager::getFileSystem()->exists(StorageManager::blueprints(env('CONNECTION').'/'.$blueprint)))
-            $blueprint = env('CONNECTION').'/'.$blueprint;
+        if (StorageManager::getFileSystem()->exists(StorageManager::blueprints($folder.'/'.$blueprint)))
+            $blueprint = $folder.'/'.$blueprint;
         elseif (!StorageManager::getFileSystem()->exists(StorageManager::blueprints($blueprint)))
             throw new FileReadException("Blueprint $blueprint not found.");
 
-        try {
-            $this->blueprint = StorageManager::read('blueprints/'.$blueprint);
-        } catch (FileReadException $e) {
-            throw $e;
-        }
+        $this->blueprint = StorageManager::read('blueprints/'.$blueprint);
 
         return $this;
     }

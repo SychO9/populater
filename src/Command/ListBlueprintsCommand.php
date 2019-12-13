@@ -35,22 +35,22 @@ class ListBlueprintsCommand extends Command
         $connections['common'] = 'common';
         $blueprint_groups = [];
 
-        foreach ($connections as $connection_name => $conn) {
+        foreach ($connections as $connection_name => $conn_info) {
             foreach ($blueprints as $name => $file) {
                 if (empty($file->getRelativePath()))
                     $path = 'common';
                 else
                     $path = $file->getRelativePath();
 
-                if ($path !== $connection_name)
+                if ($path !== $conn_info['DB_NAME'])
                     continue;
 
-                $blueprint_groups[$connection_name][] = $name;
+                $blueprint_groups[$conn_info['DB_NAME']][] = $name;
             }
         }
 
-        foreach ($blueprint_groups as $connection_name => $blueprints) {
-            $output->writeln("<info>$connection_name</info>:");
+        foreach ($blueprint_groups as $database => $blueprints) {
+            $output->writeln("<info>$database</info>:");
 
             foreach ($blueprints as $bp) {
                 $output->writeln("\t- <fg=red>$bp</>");

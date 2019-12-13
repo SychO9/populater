@@ -57,7 +57,7 @@ class CreateBlueprintCommand extends Command
         $this
             ->addArgument('table_name', InputArgument::REQUIRED, 'The name of the blueprint, has to be the same as the table\'s')
             ->addArgument('number_of_columns', InputArgument::REQUIRED, 'The number of columns')
-            ->addArgument('connection_name', InputArgument::OPTIONAL, 'The database used');
+            ->addArgument('database', InputArgument::OPTIONAL, 'The database used');
     }
 
     /**
@@ -86,8 +86,8 @@ class CreateBlueprintCommand extends Command
             $blueprint['format'][$column['name']] = $column['generator'];
         }
 
-        if ($input->hasArgument('connection_name'))
-            $filename = $input->getArgument('connection_name').'/';
+        if ($input->hasArgument('database'))
+            $filename = $input->getArgument('database').'/';
 
         $filename .= $input->getArgument('table_name').'.yml';
 
