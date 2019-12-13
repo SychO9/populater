@@ -10,7 +10,7 @@ namespace SychO\Populater\Exception;
 
 use Symfony\Component\Yaml\Exception\ParseException;
 
-class FileReadException implements \Throwable
+class FileReadException extends ParseException
 {
     //
 }

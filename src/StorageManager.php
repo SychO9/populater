@@ -44,7 +44,7 @@ class StorageManager
         if (is_array($content))
             return self::writeArrayTo($filename, $content);
 
-        self::getFileSystem()->dumpFile(self::storage($filename), (string) $content);
+        self::getFileSystem()->dumpFile(self::path($filename), (string) $content);
     }
 
     /**
@@ -65,7 +65,7 @@ class StorageManager
     public static function read(string $filename): array
     {
         try {
-            $data = Yaml::parseFile(self::storage($filename));
+            $data = Yaml::parseFile(self::path($filename));
         } catch (ParseException $e) {
             throw new FileReadException($e->getMessage());
         }
@@ -80,7 +80,7 @@ class StorageManager
     {
         $blueprints = [];
         $finder = new Finder();
-        $finder->files()->in(self::blueprints());
+        $finder->files()->in(self::path('blueprints/'));
 
         foreach ($finder as $file)
             $blueprints[$file->getFilename()] = $file;
@@ -100,13 +100,21 @@ class StorageManager
     }
 
     /**
+     *
+     */
+    public static function path(string $relative_path)
+    {
+        if (strpos($relative_path, 'storage') === false)
+            $relative_path = 'storage/'.$relative_path;
+
+        return __DIR__.'/../'.$relative_path;
+    }
+
+    /**
      * Returns the full path to a file $arguments[0] located in storage/$method
      */
-    public static function __callStatic($method, $arguments = null): string
+    public static function __callStatic($method, $arguments = [])
     {
-        if ($method !== 'storage')
-            $method = 'storage/'.$method;
-
-        return __DIR__.'/../'.$method.'/'.($arguments[0] ?? '');
+        return self::getFileSystem()->{$method}(...$arguments);
     }
 }

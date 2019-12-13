@@ -32,7 +32,7 @@ class ListBlueprintsCommand extends Command
     {
         $blueprints = StorageManager::getBlueprints();
         $connections = StorageManager::read('connections.yml');
-        $connections['common'] = 'common';
+        $connections['common'] = ['DB_NAME' => 'common'];
         $blueprint_groups = [];
 
         foreach ($connections as $connection_name => $conn_info) {
@@ -53,7 +53,7 @@ class ListBlueprintsCommand extends Command
             $output->writeln("<info>$database</info>:");
 
             foreach ($blueprints as $bp) {
-                $output->writeln("\t- <fg=red>$bp</>");
+                $output->writeln("    - <fg=red>$bp</>");
             }
         }
 

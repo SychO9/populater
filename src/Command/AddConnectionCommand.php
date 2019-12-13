@@ -38,13 +38,10 @@ class AddConnectionCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $connections = [];
-
         try {
             $connections = StorageManager::read('connections.yml');
         } catch (FileReadException $e) {
-            $output->writeln("<fg=yellow>{$e->getMessage()}</>");
-            return 0;
+            $connections = [];
         }
 
         foreach (Database::ENV as $var => $info) {
