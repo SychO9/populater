@@ -5,19 +5,32 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: ubuntu-latest
+        php: [7.2, 7.3, 7.4]
+
+    name: PHP ${{ matrix.php }} on ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v1
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: ${{ matrix.php }}
+
+    - name: Check PHP Version
+      run: php -v
 
     - name: Validate composer.json and composer.lock
       run: composer validate
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
-
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: phpunit tests
       run: composer run-script phpunit
